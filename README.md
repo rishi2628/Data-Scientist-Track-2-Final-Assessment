@@ -499,7 +499,7 @@ python run_assistant.py --mode eval    # Evaluation
 ## 📧 Contact
 
 **Rishi Sharma**  
-📧 rishi.sharma@example.com  
+📧 rishi.sharma3@deloitte.com  
 🔗 [@rishi2628](https://github.com/rishi2628)  
 📦 [Repository](https://github.com/rishi2628/Data-Scientist-Track-2-Final-Assessment)
 

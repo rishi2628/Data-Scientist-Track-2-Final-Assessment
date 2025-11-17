@@ -11,6 +11,8 @@ numpy>=1.24.0
 # ============================================================================
 huggingface-hub>=0.20.0  # For HuggingFace models (FREE)
 sentence-transformers>=2.2.0  # For local embeddings (FREE)
+transformers>=4.30.0  # For local LLM models (FREE)
+torch>=2.0.0  # Required for transformers
 
 # ============================================================================
 # VECTOR STORE (Required)

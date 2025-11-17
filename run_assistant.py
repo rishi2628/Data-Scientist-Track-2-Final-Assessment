@@ -16,9 +16,9 @@ import config
 
 def check_api_keys():
     """Check if API keys are configured"""
-    # Ollama doesn't need an API key
-    if config.LLM_PROVIDER == "ollama":
-        print("✓ Using Ollama (local, no API key needed)")
+    # Local and Ollama don't need API keys
+    if config.LLM_PROVIDER in ["ollama", "local"]:
+        print(f"✓ Using {config.LLM_PROVIDER} (no API key needed)")
         return True
     
     # HuggingFace with local embeddings doesn't strictly need a key for some models
@@ -129,9 +129,35 @@ def initialize_system():
             )
             print(f"  ✓ Using HuggingFace: {config.HUGGINGFACE_MODEL}")
             
+        elif config.LLM_PROVIDER == "local":
+            from transformers import pipeline
+            from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
+            from langchain_community.embeddings import HuggingFaceEmbeddings
+            
+            print(f"  Loading local model: {config.LLM_MODEL}...")
+            print("  (First run will download model, please wait...)")
+            
+            # Create text generation pipeline
+            hf_pipeline = pipeline(
+                "text-generation",
+                model=config.LLM_MODEL,
+                max_length=512,
+                temperature=config.TEMPERATURE,
+                device=-1  # CPU
+            )
+            
+            llm = HuggingFacePipeline(pipeline=hf_pipeline)
+            
+            # Use local sentence transformers for embeddings
+            embeddings = HuggingFaceEmbeddings(
+                model_name="all-MiniLM-L6-v2"
+            )
+            print(f"  ✓ Using Local Model: {config.LLM_MODEL}")
+            print("  ✓ Using Local Embeddings: all-MiniLM-L6-v2")
+            
         else:
             print(f"❌ Unknown LLM provider: {config.LLM_PROVIDER}")
-            print("\nSupported providers: openai, google, ollama, huggingface")
+            print("\nSupported providers: openai, google, ollama, huggingface, local")
             sys.exit(1)
             
     except Exception as e:
