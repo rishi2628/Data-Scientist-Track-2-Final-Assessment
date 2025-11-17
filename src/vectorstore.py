@@ -15,8 +15,12 @@ try:
     from langchain_community.docstore.in_memory import InMemoryDocstore
     from langchain_community.vectorstores import FAISS
     from langchain.schema import Document
+    IMPORTS_AVAILABLE = True
 except ImportError:
     print("Warning: LangChain or FAISS not installed. Install with: pip install -r requirements.txt")
+    IMPORTS_AVAILABLE = False
+    # Define placeholder for type hints
+    Document = None
 
 import config
 
