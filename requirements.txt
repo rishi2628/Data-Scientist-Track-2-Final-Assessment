@@ -1,0 +1,30 @@
+# ============================================================================
+# CORE DEPENDENCIES (Required for all setups)
+# ============================================================================
+langchain>=0.1.0
+langchain-community>=0.0.10
+python-dotenv>=1.0.0
+numpy>=1.24.0
+
+# ============================================================================
+# FREE OPEN-SOURCE SUPPORT (Recommended - No API costs)
+# ============================================================================
+huggingface-hub>=0.20.0  # For HuggingFace models (FREE)
+sentence-transformers>=2.2.0  # For local embeddings (FREE)
+
+# ============================================================================
+# VECTOR STORE (Required)
+# ============================================================================
+faiss-cpu>=1.7.4
+# Note: For GPU support, replace with: faiss-gpu>=1.7.4
+
+# ============================================================================
+# OPTIONAL: PAID LLM PROVIDERS (Only install if using these services)
+# ============================================================================
+# Uncomment only if you're using OpenAI (paid service):
+# langchain-openai>=0.0.5
+# openai>=1.10.0
+
+# Uncomment only if you're using Google Gemini (has free tier):
+# langchain-google-genai>=0.0.5
+# google-generativeai>=0.3.0

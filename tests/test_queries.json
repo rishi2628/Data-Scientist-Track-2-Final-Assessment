@@ -1,0 +1,42 @@
+[
+  {
+    "query": "What are the first-line treatments for Type 2 Diabetes?",
+    "expected_topics": ["metformin", "lifestyle modifications", "diet", "exercise"],
+    "category": "general_medical_knowledge"
+  },
+  {
+    "query": "How should we manage a patient with newly diagnosed atrial fibrillation?",
+    "expected_topics": ["anticoagulation", "CHA2DS2-VASc", "rate control", "rhythm control"],
+    "category": "clinical_guidelines"
+  },
+  {
+    "query": "What are the contraindications for metformin?",
+    "expected_topics": ["renal function", "eGFR", "lactic acidosis", "liver disease"],
+    "category": "medication_safety"
+  },
+  {
+    "query": "What medications interact with warfarin?",
+    "expected_topics": ["NSAIDs", "antibiotics", "INR monitoring", "bleeding risk"],
+    "category": "drug_interactions"
+  },
+  {
+    "query": "What are the stages of chronic kidney disease?",
+    "expected_topics": ["eGFR", "staging", "albuminuria", "nephrology referral"],
+    "category": "disease_classification"
+  },
+  {
+    "query": "What are the guideline-directed medical therapies for heart failure with reduced ejection fraction?",
+    "expected_topics": ["ACE inhibitor", "beta-blocker", "MRA", "SGLT2 inhibitor"],
+    "category": "treatment_guidelines"
+  },
+  {
+    "query": "What preventive care screenings are recommended for a 55-year-old male?",
+    "expected_topics": ["colonoscopy", "blood pressure", "lipids", "diabetes screening"],
+    "category": "preventive_care"
+  },
+  {
+    "query": "What is the management protocol for acute coronary syndrome?",
+    "expected_topics": ["aspirin", "ECG", "troponin", "PCI", "antiplatelet"],
+    "category": "emergency_protocols"
+  }
+]
