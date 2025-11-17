@@ -444,7 +444,7 @@ def save_data():
     with open(config.DATA_DIR / "clinical_guidelines.json", "w") as f:
         json.dump(clinical_guidelines, f, indent=2)
     
-    print("✓ Data generation complete!")
+    print("[OK] Data generation complete!")
     print(f"  - Patient records: {config.DATA_DIR / 'patient_records.json'}")
     print(f"  - Medical knowledge: {config.DATA_DIR / 'medical_knowledge.json'}")
     print(f"  - Clinical guidelines: {config.DATA_DIR / 'clinical_guidelines.json'}")

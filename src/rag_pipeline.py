@@ -51,7 +51,7 @@ class ClinicalRAGPipeline:
         retrieval_query = create_retrieval_query(user_query)
         
         # Retrieve relevant context
-        print("\n🔍 Retrieving relevant medical knowledge...")
+        print("\n[RETRIEVAL] Retrieving relevant medical knowledge...")
         relevant_docs = self.vector_store.search(retrieval_query, k=k)
         
         # Format retrieved context
@@ -84,7 +84,7 @@ class ClinicalRAGPipeline:
         # Get patient-specific context if requested
         patient_context = None
         if patient_identifier:
-            print(f"📋 Retrieving patient information for: {patient_identifier}")
+            print(f"[PATIENT] Retrieving patient information for: {patient_identifier}")
             patient_context = self.vector_store.get_patient_context(patient_identifier)
         
         # Create comprehensive prompt
@@ -102,7 +102,7 @@ class ClinicalRAGPipeline:
             prompt = history_text + prompt
         
         # Generate response
-        print("🤖 Generating clinical response...")
+        print("[GENERATION] Generating clinical response...")
         response = self.llm.invoke(prompt)
         
         # Extract text from response (handles different LLM response formats)
@@ -163,7 +163,7 @@ class EnhancedClinicalRAG(ClinicalRAGPipeline):
         Returns:
             Response with reasoning steps
         """
-        print("\n🧠 Performing multi-step clinical reasoning...")
+        print("\n[REASONING] Performing multi-step clinical reasoning...")
         
         # Step 1: Decompose the query
         decomposition_prompt = f"""Break down this complex clinical query into simpler sub-questions:
@@ -175,7 +175,7 @@ Provide 2-4 specific sub-questions that would help answer this comprehensively."
         decomposition = self.llm.invoke(decomposition_prompt)
         sub_questions = str(decomposition.content if hasattr(decomposition, 'content') else decomposition)
         
-        print(f"\n📝 Sub-questions identified:\n{sub_questions}\n")
+        print(f"\n[SUB-QUESTIONS] Identified:\n{sub_questions}\n")
         
         # Step 2: Answer each sub-question
         # For simplicity, we'll use the main query with enhanced retrieval

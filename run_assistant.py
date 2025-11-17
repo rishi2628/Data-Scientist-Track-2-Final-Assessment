@@ -18,29 +18,29 @@ def check_api_keys():
     """Check if API keys are configured"""
     # Local and Ollama don't need API keys
     if config.LLM_PROVIDER in ["ollama", "local"]:
-        print(f"✓ Using {config.LLM_PROVIDER} (no API key needed)")
+        print(f"[OK] Using {config.LLM_PROVIDER} (no API key needed)")
         return True
     
     # HuggingFace with local embeddings doesn't strictly need a key for some models
     if config.LLM_PROVIDER == "huggingface" and not config.HUGGINGFACE_API_KEY:
-        print("⚠️  Warning: No HuggingFace API key found. Some models may not work.")
+        print("[WARNING] No HuggingFace API key found. Some models may not work.")
         print("   You can get a free token at: https://huggingface.co/settings/tokens")
         return True  # Allow to continue, some models work without key
     
     if not config.OPENAI_API_KEY and not config.GOOGLE_API_KEY and not config.HUGGINGFACE_API_KEY:
-        print("❌ Error: No API key found!")
-        print("\n💡 You have several options:")
-        print("\n1. 🆓 Use Ollama (FREE, Local, No API Key):")
+        print("[ERROR] No API key found!")
+        print("\nYou have several options:")
+        print("\n1. Use Ollama (FREE, Local, No API Key):")
         print("   - Install from https://ollama.ai")
         print("   - Run: ollama pull llama2")
         print("   - Set in .env: LLM_PROVIDER=ollama")
-        print("\n2. 🆓 Use Google Gemini (FREE API):")
+        print("\n2. Use Google Gemini (FREE API):")
         print("   - Get key from https://makersuite.google.com/app/apikey")
         print("   - Set in .env: LLM_PROVIDER=google, GOOGLE_API_KEY=your_key")
-        print("\n3. 💰 Use OpenAI (Paid, Best Quality):")
+        print("\n3. Use OpenAI (Paid, Best Quality):")
         print("   - Get key from https://platform.openai.com/")
         print("   - Set in .env: LLM_PROVIDER=openai, OPENAI_API_KEY=your_key")
-        print("\n📖 See OLLAMA_SETUP.md for detailed free setup guide")
+        print("\n[INFO] See OLLAMA_SETUP.md for detailed free setup guide")
         return False
     return True
 
@@ -62,13 +62,13 @@ def initialize_system():
     )
     
     if not data_exists:
-        print("📊 Synthetic data not found. Generating...")
+        print("[INFO] Synthetic data not found. Generating...")
         from src.data_generator import save_data
         save_data()
         print()
     
     # Initialize LLM and embeddings
-    print("🔧 Initializing AI models...")
+    print("[INIT] Initializing AI models...")
     
     try:
         if config.LLM_PROVIDER == "openai":
@@ -83,7 +83,7 @@ def initialize_system():
                 model=config.EMBEDDING_MODEL,
                 api_key=config.OPENAI_API_KEY
             )
-            print(f"  ✓ Using OpenAI: {config.LLM_MODEL}")
+            print(f"  [OK] Using OpenAI: {config.LLM_MODEL}")
             
         elif config.LLM_PROVIDER == "google":
             from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
@@ -97,7 +97,7 @@ def initialize_system():
                 model="models/embedding-001",
                 google_api_key=config.GOOGLE_API_KEY
             )
-            print(f"  ✓ Using Google: {config.LLM_MODEL}")
+            print(f"  [OK] Using Google: {config.LLM_MODEL}")
             
         elif config.LLM_PROVIDER == "ollama":
             from langchain_community.llms import Ollama
@@ -112,8 +112,8 @@ def initialize_system():
             embeddings = HuggingFaceEmbeddings(
                 model_name="all-MiniLM-L6-v2"  # Fast, free local embeddings
             )
-            print(f"  ✓ Using Ollama (Local): {config.LLM_MODEL}")
-            print("  ✓ Using Local Embeddings: all-MiniLM-L6-v2")
+            print(f"  [OK] Using Ollama (Local): {config.LLM_MODEL}")
+            print("  [OK] Using Local Embeddings: all-MiniLM-L6-v2")
             
         elif config.LLM_PROVIDER == "huggingface":
             from langchain_community.llms import HuggingFaceHub
@@ -127,21 +127,27 @@ def initialize_system():
             embeddings = HuggingFaceEmbeddings(
                 model_name="all-MiniLM-L6-v2"
             )
-            print(f"  ✓ Using HuggingFace: {config.HUGGINGFACE_MODEL}")
+            print(f"  [OK] Using HuggingFace: {config.HUGGINGFACE_MODEL}")
             
         elif config.LLM_PROVIDER == "local":
-            from transformers import pipeline
+            from transformers import pipeline, AutoTokenizer
             from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
             from langchain_community.embeddings import HuggingFaceEmbeddings
             
             print(f"  Loading local model: {config.LLM_MODEL}...")
             print("  (First run will download model, please wait...)")
+            print("  Note: Local models have limitations - consider using Ollama or Gemini for better results")
             
-            # Create text generation pipeline
+            # Load tokenizer to handle truncation
+            tokenizer = AutoTokenizer.from_pretrained(config.LLM_MODEL)
+            
+            # Create text generation pipeline with truncation
             hf_pipeline = pipeline(
                 "text-generation",
                 model=config.LLM_MODEL,
-                max_new_tokens=150,  # Generate up to 150 new tokens
+                tokenizer=tokenizer,
+                max_new_tokens=100,  # Generate up to 100 new tokens
+                truncation=True,  # Truncate long inputs
                 temperature=config.TEMPERATURE,
                 device=-1  # CPU
             )
@@ -152,37 +158,37 @@ def initialize_system():
             embeddings = HuggingFaceEmbeddings(
                 model_name="all-MiniLM-L6-v2"
             )
-            print(f"  ✓ Using Local Model: {config.LLM_MODEL}")
-            print("  ✓ Using Local Embeddings: all-MiniLM-L6-v2")
+            print(f"  [OK] Using Local Model: {config.LLM_MODEL}")
+            print("  [OK] Using Local Embeddings: all-MiniLM-L6-v2")
             
         else:
-            print(f"❌ Unknown LLM provider: {config.LLM_PROVIDER}")
+            print(f"[ERROR] Unknown LLM provider: {config.LLM_PROVIDER}")
             print("\nSupported providers: openai, google, ollama, huggingface, local")
             sys.exit(1)
             
     except Exception as e:
-        print(f"❌ Error initializing LLM: {e}")
+        print(f"[ERROR] Error initializing LLM: {e}")
         print("\nMake sure you have installed the required packages:")
         print("  pip install -r requirements.txt")
         sys.exit(1)
     
     # Initialize vector store
-    print("\n🗄️  Setting up vector store...")
+    print("\n[INIT] Setting up vector store...")
     from src.vectorstore import initialize_vector_store
     
     try:
         vector_store = initialize_vector_store(embeddings)
-        print("  ✓ Vector store ready")
+        print("  [OK] Vector store ready")
     except Exception as e:
-        print(f"❌ Error initializing vector store: {e}")
+        print(f"[ERROR] Error initializing vector store: {e}")
         sys.exit(1)
     
     # Initialize RAG pipeline
-    print("\n🔗 Initializing RAG pipeline...")
+    print("\n[INIT] Initializing RAG pipeline...")
     from src.rag_pipeline import EnhancedClinicalRAG
     
     rag_pipeline = EnhancedClinicalRAG(llm, vector_store)
-    print("  ✓ RAG pipeline ready")
+    print("  [OK] RAG pipeline ready")
     
     return llm, rag_pipeline
 
@@ -194,7 +200,7 @@ def print_response(result: dict):
     print("="*60)
     print(result['response'])
     print("\n" + "-"*60)
-    print(f"📚 Sources used: {result['num_sources']}")
+    print(f"[INFO] Sources used: {result['num_sources']}")
     if result['sources']:
         print("\nTop sources:")
         for i, source in enumerate(result['sources'][:3], 1):
@@ -204,7 +210,7 @@ def print_response(result: dict):
 
 def interactive_mode(rag_pipeline):
     """Run interactive question-answering mode"""
-    print("\n🩺 Interactive Clinical Assistant Mode")
+    print("\n[INTERACTIVE] Clinical Assistant Mode")
     print("-" * 60)
     print("Ask clinical questions, or use special commands:")
     print("  /patient <name> - Set patient context")
@@ -230,13 +236,13 @@ def interactive_mode(rag_pipeline):
                 cmd = cmd_parts[0].lower()
                 
                 if cmd in ['/quit', '/exit']:
-                    print("\n👋 Thank you for using the Clinical Assistant. Goodbye!")
+                    print("\nThank you for using the Clinical Assistant. Goodbye!")
                     break
                 
                 elif cmd == '/clear':
                     rag_pipeline.clear_history()
                     current_patient = None
-                    print("✓ History cleared")
+                    print("[OK] History cleared")
                     continue
                 
                 elif cmd == '/history':
@@ -244,7 +250,7 @@ def interactive_mode(rag_pipeline):
                     if not history:
                         print("No conversation history yet.")
                     else:
-                        print(f"\n📜 Conversation History ({len(history)} exchanges):")
+                        print(f"\n[HISTORY] Conversation History ({len(history)} exchanges):")
                         for i, entry in enumerate(history, 1):
                             print(f"\n{i}. Q: {entry['query']}")
                             print(f"   A: {entry['response'][:100]}...")
@@ -253,13 +259,13 @@ def interactive_mode(rag_pipeline):
                 elif cmd == '/patient':
                     if len(cmd_parts) > 1:
                         current_patient = cmd_parts[1]
-                        print(f"✓ Patient context set to: {current_patient}")
+                        print(f"[OK] Patient context set to: {current_patient}")
                     else:
                         print("Usage: /patient <name>")
                     continue
                 
                 elif cmd == '/eval':
-                    print("\n🧪 Running evaluation suite...")
+                    print("\n[EVAL] Running evaluation suite...")
                     run_evaluation(rag_pipeline)
                     continue
                 
@@ -277,17 +283,17 @@ def interactive_mode(rag_pipeline):
             print_response(result)
             
         except KeyboardInterrupt:
-            print("\n\n👋 Interrupted. Goodbye!")
+            print("\n\nInterrupted. Goodbye!")
             break
         except Exception as e:
-            print(f"\n❌ Error: {e}")
+            print(f"\n[ERROR] Error: {e}")
             import traceback
             traceback.print_exc()
 
 
 def demo_mode(rag_pipeline):
     """Run demo with predefined queries"""
-    print("\n🎬 Demo Mode - Showcasing Clinical Assistant Capabilities\n")
+    print("\n[DEMO] Demo Mode - Showcasing Clinical Assistant Capabilities\n")
     
     demo_queries = [
         {
@@ -380,7 +386,7 @@ def main():
     # Initialize system
     _, rag_pipeline = initialize_system()
     
-    print("\n✅ System initialized successfully!\n")
+    print("\n[SUCCESS] System initialized successfully!\n")
     
     # Run selected mode
     if args.mode == 'interactive':

@@ -186,7 +186,7 @@ class VectorStoreManager:
             embedding=self.embeddings
         )
         
-        print("✓ Vector store created successfully!")
+        print("[OK] Vector store created successfully!")
     
     def save_vector_store(self, path: Path = None):
         """
@@ -203,7 +203,7 @@ class VectorStoreManager:
         
         print(f"Saving vector store to {path}...")
         self.vector_store.save_local(str(path))
-        print("✓ Vector store saved!")
+        print("[OK] Vector store saved!")
     
     def load_vector_store(self, path: Path = None):
         """
@@ -224,7 +224,7 @@ class VectorStoreManager:
             self.embeddings,
             allow_dangerous_deserialization=True  # Our data is safe
         )
-        print("✓ Vector store loaded!")
+        print("[OK] Vector store loaded!")
     
     def search(self, query: str, k: int = None, filter_dict: Dict = None) -> List[Tuple[Document, float]]:
         """
