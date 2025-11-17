@@ -141,7 +141,7 @@ def initialize_system():
             hf_pipeline = pipeline(
                 "text-generation",
                 model=config.LLM_MODEL,
-                max_length=512,
+                max_new_tokens=150,  # Generate up to 150 new tokens
                 temperature=config.TEMPERATURE,
                 device=-1  # CPU
             )

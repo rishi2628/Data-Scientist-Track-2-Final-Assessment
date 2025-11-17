@@ -11,16 +11,19 @@ import numpy as np
 
 try:
     import faiss
-    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
     from langchain_community.docstore.in_memory import InMemoryDocstore
     from langchain_community.vectorstores import FAISS
-    from langchain.schema import Document
+    from langchain_core.documents import Document
     IMPORTS_AVAILABLE = True
-except ImportError:
-    print("Warning: LangChain or FAISS not installed. Install with: pip install -r requirements.txt")
+except ImportError as e:
+    print(f"Warning: Import error: {e}")
+    print("Install with: pip install -r requirements.txt")
     IMPORTS_AVAILABLE = False
     # Define placeholder for type hints
     Document = None
+    RecursiveCharacterTextSplitter = None
+    FAISS = None
 
 import config
 
